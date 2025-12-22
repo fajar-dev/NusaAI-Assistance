@@ -2,7 +2,8 @@
   "name": "nusa-ai",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "ingest": "bun run src/ingest.ts"
+    "ingest": "bun run src/ingest.ts",
+    "build": "bun build --minify --outfile dist/index.js --target bun src/index.ts"
   },
   "dependencies": {
     "@langchain/community": "^1.1.1",
