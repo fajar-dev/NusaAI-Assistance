@@ -5,7 +5,6 @@ import { RAGService } from './services/RAGService';
 
 const app = new Hono();
 
-// Dependency Injection / Composition Root
 const embeddingModel = Models.createEmbeddingModel();
 const chatModel = Models.createChatModel();
 const vectorStoreService = new VectorStoreService(embeddingModel);
@@ -13,31 +12,32 @@ const ragService = new RAGService(vectorStoreService, chatModel);
 
 
 app.get('/', (c) => {
-  return c.text('NusaAI RAG Service is running!');
+    return c.text('NusaAI RAG Service is running!');
 });
 
-app.post('/ask', async (c) => {
-    try {
-        const body = await c.req.json();
-        const question = body.question;
-
-        if (!question) {
-            return c.json({ message: 'Question is required' }, 400);
-        }
-
-        const answer = await ragService.askQuestion(question);
+// app.post('/ask', async (c) => {
+//     try {
+//         const body = await c.req.json();
+//         const question = body.question;
+//         if (!question) {
+//             return c.json({ message: 'Question is required' }, 400);
+//         }
+//         const result = await ragService.askQuestion(question);
         
-        if (!answer) {
-             return c.json({ message: 'No relevant answer found.' }, 404);
-        }
+//         if (!result) {
+//             return c.json({ message: 'No relevant answer found.' }, 404);
+//         }
 
-        return c.json({ question, answer });
-    } catch (error: any) {
-        return c.json({ message: 'Error processing request', error: error.message }, 500);
-    }
-});
+//         return c.json({ 
+//             question, 
+//             answer: result.answer,
+//             sources: result.sources
+//         });
+//     } catch (error: any) {
+//         return c.json({ message: 'Error processing request', error: error.message }, 500);
+//     }
+// });
 
-// Cleanup on exit
 process.on('SIGINT', async () => {
     await vectorStoreService.close();
     process.exit(0);

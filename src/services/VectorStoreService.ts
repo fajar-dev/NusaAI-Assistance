@@ -1,44 +1,40 @@
-import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-import { Document } from "@langchain/core/documents";
-import { Embeddings } from "@langchain/core/embeddings";
-import { vectorStoreConfig } from "../config/database";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector"
+import { Document } from "@langchain/core/documents"
+import { Embeddings } from "@langchain/core/embeddings"
+import { vectorStoreConfig } from "../config/database"
 
 export class VectorStoreService {
-    private vectorStore: PGVectorStore | null = null;
-    private embeddings: Embeddings;
+    private store?: PGVectorStore
 
-    constructor(embeddings: Embeddings) {
-        this.embeddings = embeddings;
-    }
+    constructor(private readonly embeddings: Embeddings) {}
 
-    async initialize(): Promise<void> {
-        this.vectorStore = await PGVectorStore.initialize(this.embeddings, vectorStoreConfig);
+    private async getStore(): Promise<PGVectorStore> {
+        if (!this.store) {
+        this.store = await PGVectorStore.initialize(this.embeddings, vectorStoreConfig)
+        }
+        return this.store
     }
 
     async addDocuments(docs: Document[]): Promise<void> {
-        if (!this.vectorStore) {
-            await this.initialize();
-        }
-        
-        try {
-            await this.vectorStore!.addDocuments(docs);
-            console.log(`✅ Berhasil menyimpan ${docs.length} dokumen!`);
-        } catch (error) {
-            console.error("❌ Gagal menyimpan data:", error);
-            throw error;
-        }
+        if (!docs?.length) return
+        const store = await this.getStore()
+        await store.addDocuments(docs)
     }
 
-    async similaritySearch(query: string, k: number = 2): Promise<Document[]> {
-        if (!this.vectorStore) {
-            await this.initialize();
-        }
-        return await this.vectorStore!.similaritySearch(query, k);
+    async similaritySearch(query: string, k = 2): Promise<Document[]> {
+        if (!query?.trim()) return []
+        const store = await this.getStore()
+        return store.similaritySearch(query, k)
+    }
+
+    async similaritySearchWithScore(query: string, k = 2): Promise<[Document, number][]> {
+        if (!query?.trim()) return []
+        const store = await this.getStore()
+        return store.similaritySearchWithScore(query, k)
     }
 
     async close(): Promise<void> {
-        if (this.vectorStore) {
-            await this.vectorStore.end();
-        }
+        await this.store?.end()
+        this.store = undefined
     }
 }

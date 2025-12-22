@@ -19,15 +19,11 @@ const dummyDocs = [
 ];
 
 async function main() {
-    console.log("📥 Memulai proses ingestion...");
-
     try {
         const embeddingModel = Models.createEmbeddingModel();
         const vectorStoreService = new VectorStoreService(embeddingModel);
 
         await vectorStoreService.addDocuments(dummyDocs);
-        
-        console.log(`✅ Sukses! ${dummyDocs.length} dokumen telah disimpan.`);
         
         await vectorStoreService.close();
     } catch (error) {

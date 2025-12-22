@@ -13,19 +13,16 @@ export class RAGService {
         this.chatModel = chatModel;
     }
 
-    async askQuestion(question: string): Promise<string | null> {
-        console.log(`\n🕵️  Mencari jawaban untuk: "${question}"...`);
-
+    async askQuestion(question: string): Promise<any | null> {
         try {
-            // 1. Retrieval
-            const relevantDocs = await this.vectorStoreService.similaritySearch(question, 2);
+            // 1. Retrieval with score
+            const relevantDocsWithScore = await this.vectorStoreService.similaritySearchWithScore(question, 1);
 
-            if (relevantDocs.length === 0) {
-                console.log("⚠️ Tidak ada data relevan ditemukan.");
+            if (relevantDocsWithScore.length === 0) {
                 return null;
             }
 
-            const context = relevantDocs.map(d => d.pageContent).join("\n\n");
+            const context = relevantDocsWithScore.map(([d, _]) => d.pageContent).join("\n\n");
 
             // 2. Prompting
             const prompt = PromptTemplate.fromTemplate(`
@@ -45,10 +42,19 @@ export class RAGService {
                 new StringOutputParser(),
             ]);
 
-            const response = await chain.invoke({ context, question });
+            const answer = await chain.invoke({ context, question });
             
-            console.log("🤖 Jawaban:", response);
-            return response;
+            // Format sources with score
+            const sources = relevantDocsWithScore.map(([doc, score]) => ({
+                content: doc.pageContent,
+                metadata: doc.metadata,
+                score: score
+            }));
+
+            return {
+                answer,
+                sources
+            };
 
         } catch (error) {
             console.error("❌ Error saat RAG:", error);
