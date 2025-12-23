@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { Models } from './config/models';
 import { VectorStoreService } from './services/VectorStoreService';
 import { RAGService } from './services/RAGService';
+import { PORT } from './config/config';
 
 const app = new Hono();
 
@@ -42,4 +43,7 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-export default app;
+export default {
+    port: PORT,
+    fetch: app.fetch,
+}
