@@ -37,42 +37,6 @@ app.post('/ask', async (c) => {
     }
 });
 
-app.post('/webhook/google-chat', async (c) => {
-    try {
-        const event = await c.req.json();
-
-        if (event.type === 'ADDED_TO_SPACE') {
-            return c.json({ text: 'Halo! Tag saya untuk bertanya mengenai dokumen.' });
-        }
-
-        if (event.type === 'MESSAGE') {
-            const userQuestion = event.message.argumentText?.trim() || event.message.text?.trim();
-
-            if (!userQuestion) {
-                return c.json({ text: 'Silakan ketik pertanyaan setelah men-tag saya.' });
-            }
-
-            const result = await ragService.askQuestion(userQuestion);
-
-            if (!result || !result.answer) {
-                return c.json({ text: 'Maaf, saya tidak menemukan jawaban yang relevan.' });
-            }
-
-            let replyText = result.answer;
-            if (result.sources && result.sources.length > 0) {
-                replyText += `\n\nSumber: ${result.sources.join(', ')}`;
-            }
-
-            return c.json({ text: replyText });
-        }
-
-        return c.json({});
-
-    } catch (error: any) {
-        return c.json({ text: `Error: ${error.message}` });
-    }
-});
-
 process.on('SIGINT', async () => {
     await vectorStoreService.close();
     process.exit(0);
