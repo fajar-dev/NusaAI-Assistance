@@ -18,7 +18,7 @@ const poolConfig: PoolConfig = {
 
 export const vectorStoreConfig: PGVectorStoreArgs = {
     postgresConnectionOptions: poolConfig,
-    tableName: "documents",
+    tableName: "embeddings",
     columns: {
         idColumnName: "id",
         vectorColumnName: "vector",
