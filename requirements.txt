@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langchain-google-genai
+langchain-postgres
+langchain-core
+psycopg[binary,pool]
+asyncpg
+sqlalchemy
+pydantic-settings
+pgvector
