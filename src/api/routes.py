@@ -2,12 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_db
 from src.schemas.chat import AskRequest, AskResponse
-from src.services.rag_service import rag_service
+from src.services.rag_service import RAGService, get_rag_service
 
 router = APIRouter()
 
 @router.post("/ask", response_model=AskResponse)
-async def ask_question(request: AskRequest, db: AsyncSession = Depends(get_db)):
+async def ask_question(
+    request: AskRequest, 
+    db: AsyncSession = Depends(get_db),
+    rag_service: RAGService = Depends(get_rag_service)
+):
     try:
         result = await rag_service.ask_question(request.question, request.users, request.space, db)
         return AskResponse(**result)

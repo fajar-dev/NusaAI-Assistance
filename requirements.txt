@@ -1,8 +1,8 @@
 fastapi
 uvicorn
-langchain-google-genai
+langchain-google-genai>=2.0
 langchain-postgres
-langchain-core
+langchain-core>=0.3
 psycopg[binary,pool]
 asyncpg
 sqlalchemy

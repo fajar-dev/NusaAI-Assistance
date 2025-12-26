@@ -44,6 +44,17 @@ async def run_migrations():
         );
         """
         await conn.execute(create_table_query)
+
+        print("Creating embeddings table...")
+        create_embeddings_table_query = """
+        CREATE TABLE IF NOT EXISTS embeddings (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            content TEXT NOT NULL,
+            vector vector(768) NOT NULL,
+            metadata JSONB NULL
+        );
+        """
+        await conn.execute(create_embeddings_table_query)
         
         print("Migrations applied successfully.")
         

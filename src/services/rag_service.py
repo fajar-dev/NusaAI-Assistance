@@ -5,17 +5,16 @@ from langchain_core.output_parsers import StrOutputParser
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
-from src.services.vector_service import vector_service
+
 from src.models.history import History
 
 class RAGService:
-    def __init__(self):
+    def __init__(self, vector_service):
         self.llm = ChatGoogleGenerativeAI(
             model=settings.GOOGLE_LLM_MODEL, 
             google_api_key=settings.GOOGLE_API_KEY
         )
         self.vector_store = vector_service.get_vector_store()
-        self.retriever = self.vector_store.as_retriever(search_kwargs={"k": settings.KWARGS})
         
         self.template = """Answer the question based only on the following context:
         {context}
@@ -72,4 +71,10 @@ class RAGService:
             "sources": sources_data
         }
 
-rag_service = RAGService()
+
+from fastapi import Depends
+from src.services.vector_service import VectorService, get_vector_service
+
+def get_rag_service(vector_service: VectorService = Depends(get_vector_service)):
+    return RAGService(vector_service)
+

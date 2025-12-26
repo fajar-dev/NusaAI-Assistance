@@ -1,5 +1,5 @@
-from pydantic import BaseModel
 from typing import List, Optional, Any
+from pydantic import BaseModel
 
 class Source(BaseModel):
     content: str
@@ -7,8 +7,8 @@ class Source(BaseModel):
     score: float
 
 class AskRequest(BaseModel):
-    users: object
-    space: Optional[object] = None
+    users: Any
+    space: Optional[Any] = None
     question: str
 
 class AskResponse(BaseModel):
