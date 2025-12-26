@@ -40,12 +40,16 @@ A Retrieval-Augmented Generation (RAG) system built with FastAPI, LangChain, Goo
 4.  **Configure Environment**:
     Create a `.env` file in the root directory:
     ```env
+    APP_PORT=8000
     DB_HOST=localhost
     DB_PORT=5432
     DB_USER=postgres
     DB_PASSWORD=password
     DB_DATABASE=vectordb
     GOOGLE_API_KEY=your_google_api_key
+    GOOGLE_EMBEDDING_MODEL=embedding-001
+    GOOGLE_LLM_MODEL=gemini-pro
+    VECTOR_K=3
     ```
 
 ## Usage
@@ -90,7 +94,16 @@ Response:
 
 ```json
 {
+  "question": "What allows employees to check in?",
   "answer": "NusaWork offers a mobile app...",
-  "id": 1
+  "sources": [
+    {
+      "content": "NusaWork is a comprehensive HR management platform designed to streamline human resource processes.",
+      "metadata": {
+        "source": "overview"
+      },
+      "score": 0.4572025734098184
+    }
+  ]
 }
 ```
