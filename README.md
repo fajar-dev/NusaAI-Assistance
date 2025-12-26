@@ -25,6 +25,11 @@ A Retrieval-Augmented Generation (RAG) system built with FastAPI, LangChain, Goo
     └── scripts/           # Migrations & Seeding
 ```
 
+## Prerequisites
+
+- **Python 3.11** (Required due to compatibility issues with newer versions)
+- PostgreSQL with `pgvector` extension
+
 ## Setup & Installation
 
 1.  **Clone the repository** (if applicable).
